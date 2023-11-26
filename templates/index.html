@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Video</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 5rem;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        .video-preview {
+            margin-top: 20px;
+        }
+        nav {
+            margin-bottom: 50px;
+        }
+        .nav-link {
+            color: #fff !important;
+        }
+        .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+        <div class="container">
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center">Create Money Making Videos</h1>
+        <form method="post" enctype="multipart/form-data" class="w-50">
+            <div class="form-group">
+                <label for="file">Image File(s):</label>
+                <input type="file" class="form-control-file" name="file" multiple required>
+            </div>
+            <div class="form-group">
+                <label for="audio">Audio File (optional):</label>
+                <input type="file" class="form-control-file" name="audio" accept="audio/*">
+            </div>
+            <div class="btn-group" role="group">
+                <button type="submit" class="btn btn-primary" name="video_type" value="short">YouTube Short</button>
+                <button type="submit" class="btn btn-secondary" name="video_type" value="reel">Instagram Reel</button>
+                <button type="submit" class="btn btn-success" name="video_type" value="facebook">Facebook Video</button>
+                <button type="submit" class="btn btn-info" name="video_type" value="youtube">YouTube Video</button>
+            </div>
+        </form>
+
+        {% if video_filename %}
+            <div class="video-preview">
+                <video controls width="320" height="240">
+                    <source src="{{ video_filename }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <a href="{{ video_filename }}" class="btn btn-primary mt-3" download>Download Video</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
