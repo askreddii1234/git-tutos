@@ -1,0 +1,220 @@
+etting up DBT (Data Build Tool) in a Kubernetes cluster using GitHub involves several steps. Here's a detailed guide:
+
+Create a GitHub Repository:
+
+Start by creating a new repository on GitHub for your DBT project. This will be used to store your DBT models, tests, and configuration files.
+Clone the Repository Locally:
+
+Clone the repository to your local machine where you'll work on the DBT project.
+Install DBT:
+
+Install DBT on your local machine. This can be done using package managers like pip.
+Command: pip install dbt
+Initialize DBT Project:
+
+In your local repository directory, initialize a new DBT project.
+Command: dbt init your_project_name
+Configure DBT for your Data Warehouse:
+
+Edit the profiles.yml file to set up the connection to your data warehouse. This configuration will depend on the type of data warehouse you're using (e.g., Redshift, BigQuery, Snowflake).
+Develop DBT Models:
+
+Create and edit your DBT models. These are SQL files that define transformations on your data.
+Push Changes to GitHub:
+
+Regularly commit and push your changes to the GitHub repository.
+Set Up a Kubernetes Cluster:
+
+If you don't already have a Kubernetes cluster, set one up. This can be done on cloud platforms like AWS, GCP, or Azure.
+Create a Docker Image:
+
+Create a Docker image that includes DBT and your project. You'll need a Dockerfile for this.
+The Dockerfile should copy your DBT project into the image and set the necessary environment variables.
+Push Docker Image to a Registry:
+
+Push the Docker image to a container registry (like Docker Hub or AWS ECR).
+Create Kubernetes Deployments:
+
+Write Kubernetes deployment YAML files to run your DBT project.
+These files should specify the Docker image to use and define how the DBT project should be run.
+Deploy to Kubernetes:
+
+Use kubectl, the Kubernetes command-line tool, to apply your deployment files to your cluster.
+Schedule DBT Runs:
+
+Optionally, you can schedule your DBT runs using Kubernetes CronJobs or other orchestration tools like Airflow.
+Monitor and Update:
+
+Monitor the performance and output of your DBT runs.
+Update your models, tests, and configuration as needed, and go through the cycle of pushing changes to GitHub, updating the Docker image, and redeploying to Kubernetes.
+Each of these steps may involve additional sub-steps or considerations depending on your specific environment and requirements.
+
+DBT (Data Build Tool) and Google Dataflow are both powerful tools used in data processing and ETL (Extract, Transform, Load) operations, but they serve slightly different purposes and have distinct advantages and disadvantages, especially when it comes to loading data into BigQuery. Here's a comparison:
+
+DBT (Data Build Tool)
+Advantages:
+SQL-Focused: DBT is SQL-centric, making it more accessible for data analysts and engineers who are already familiar with SQL.
+Version Control: It integrates seamlessly with version control systems like Git, which is great for collaboration and tracking changes.
+Data Transformation: Specializes in transforming data within your data warehouse, making it more efficient for complex transformations.
+Modularity and Reusability: Offers modularity in code which allows for reusability of models and analyses.
+Community and Ecosystem: Has a strong community and growing ecosystem with many plugins and integrations.
+Disadvantages:
+Limited to Transformations: Primarily focused on the "transform" part of ETL, not as comprehensive for extraction and loading.
+Less Suitable for Streaming Data: Not ideal for real-time data processing or complex event stream processing.
+
+
+Slide 4: Advantages of DBT
+List key advantages:
+SQL-Focused
+Version Control Integration
+Data Transformation Efficiency
+Modularity and Reusability
+Strong Community and Ecosystem
+
+Creating a cheat sheet for using DBT (Data Build Tool) with Google BigQuery can be incredibly handy. This cheat sheet will cover key concepts, commands, and configurations that are essential for working with DBT and BigQuery.
+
+### Basic Concepts
+- **DBT (Data Build Tool):** A command-line tool that enables data analysts and engineers to transform data in their warehouse more effectively.
+- **BigQuery:** A serverless, highly scalable, and cost-effective multi-cloud data warehouse designed for business agility.
+
+### Setup and Configuration
+- **Install DBT:**
+  ```bash
+  pip install dbt-bigquery
+  ```
+- **Initialize a new DBT project:**
+  ```bash
+  dbt init your_project_name
+  ```
+- **Configure `profiles.yml` for BigQuery:**
+  ```yaml
+  your_project_name:
+    target: dev
+    outputs:
+      dev:
+        type: bigquery
+        method: oauth
+        project: your-gcp-project
+        dataset: your_dataset_name
+        threads: 1
+        timeout_seconds: 300
+        location: US  # or your specific location
+  ```
+
+### DBT Project Structure
+- **Models (`/models`):** SQL files defining your transformations.
+- **Tests (`/tests`):** YAML files to test data integrity.
+- **Seeds (`/data`):** CSV files loaded into the database for use in models or tests.
+- **Macros (`/macros`):** Custom functions written in Jinja.
+
+### Core DBT Commands
+- **Run all models:**
+  ```bash
+  dbt run
+  ```
+- **Run specific model:**
+  ```bash
+  dbt run --models model_name
+  ```
+- **Test your models:**
+  ```bash
+  dbt test
+  ```
+- **Generate project documentation:**
+  ```bash
+  dbt docs generate
+  ```
+- **Serve project documentation locally:**
+  ```bash
+  dbt docs serve
+  ```
+- **Seed (load CSV files):**
+  ```bash
+  dbt seed
+  ```
+
+### Model Creation
+- **Basic model SQL (`/models/my_model.sql`):**
+  ```sql
+  SELECT 
+    column1,
+    column2,
+    ...
+  FROM `your-gcp-project.your_dataset_name.your_table_name`
+  ```
+- **Incremental model:**
+  ```sql
+  {{
+    config(
+      materialized = 'incremental',
+      unique_key = 'id'  # or your unique key
+    )
+  }}
+  
+  SELECT 
+    ...
+  WHERE 
+    ...
+  {%- if is_incremental() -%}
+    AND timestamp_column > (SELECT MAX(timestamp_column) FROM {{ this }})
+  {%- endif -%}
+  ```
+
+### Common Practices
+- **Use Jinja for dynamic SQL:**
+  - Control structures `{% if ... %}...{% endif %}`
+  - Macros `{{ macro_name(args) }}`
+- **Environment-aware configuration:**
+  ```yaml
+  models:
+    your_project_name:
+      +materialized: "{{ 'table' if target.name == 'prod' else 'view' }}"
+  ```
+- **Testing:**
+  - Tests like `unique`, `not_null`, `relationships`, etc. defined in YAML files within the `models` directory.
+- **Documentation:**
+  - Add descriptions in your model files or YAML files for better documentation.
+
+### Advanced Topics
+- **Custom Macros:**
+  - Write custom functions in Jinja to be reused in multiple models.
+- **Packages:**
+  - Use DBT Hub to find packages that extend DBT's functionality.
+
+This cheat sheet covers the essentials, but remember, DBT and BigQuery are both rich in features and capabilities, so there's always more to explore and learn.
+
+
+
+-- dbt model (expanded_dummy_model.sql)
+WITH dummy_data AS (
+    SELECT
+        id,
+        -- Simulating additional columns with various data types
+        'Sample Name' AS name,
+        'sample@email.com' AS email,
+        'Sample Address' AS address,
+        CURRENT_DATE AS registration_date,
+        (RANDOM() * 100)::INT AS random_number,
+        CASE WHEN (id % 2) = 0 THEN 'Even' ELSE 'Odd' END AS odd_or_even,
+        'Fixed Value' AS static_column,
+        SUBSTRING(MD5(RANDOM()::TEXT), 1, 10) AS random_string,
+        NOW() AS current_timestamp,
+        (id * 10)::INT AS calculated_column,
+        'Dummy' AS constant_value
+    FROM dummy_table
+)
+
+SELECT 
+    id,
+    name,
+    email,
+    address,
+    registration_date,
+    random_number,
+    odd_or_even,
+    static_column,
+    random_string,
+    current_timestamp,
+    calculated_column,
+    constant_value
+FROM dummy_data
